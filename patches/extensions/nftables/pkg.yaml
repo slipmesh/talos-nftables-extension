@@ -1,0 +1,41 @@
+# Overlaid onto a siderolabs/extensions checkout (see Makefile's checkout-extensions target) at
+# nftables/pkg.yaml, alongside nftables-service.yaml (copied from the sibling ../talos-extensions
+# repo's extension-services/nftables.yaml at build time) and nftables-bin (the cross-compiled
+# `nftables` binary, staged in by `make agents` before this runs) - both referenced below as plain
+# /pkg/<file> paths, no `sources:` entry needed: bldr already exposes this package's own overlay
+# directory at /pkg/ inside the build (confirmed against ../talos-awg-extension's amneziawg/pkg.yaml,
+# which stages its own cross-compiled binary the identical way).
+#
+# Pulls in the vendored static `nft` binary from the ../pkgs/nftables-pkg OCI image (see
+# ../pkgs/nftables-pkg/pkg.yaml) via `dependencies: [image: ...]` - same mechanism amneziawg/pkg.yaml
+# uses to pull in the kernel module built in siderolabs/pkgs, a plain OCI layer merge onto this
+# build stage's own filesystem (confirmed: amneziawg/pkg.yaml reads its dependency's kernel modules
+# straight from /usr/lib/modules with no special mount path, same expected here for /usr/bin/nft).
+#
+# `name:` below must match manifest.yaml.tmpl's `metadata.name` (both `nftables`) - not cosmetic,
+# see amneziawg/pkg.yaml's own comment on this same requirement (extensions-validator's --pkg-name
+# check fails the build otherwise).
+name: nftables
+variant: scratch
+shell: /bin/bash
+dependencies:
+  - stage: base
+  - image: "{{ .BUILD_ARG_PKGS_PREFIX }}/nftables-pkg:{{ .BUILD_ARG_PKGS }}"
+steps:
+  - install:
+      - |
+        mkdir -p /rootfs/usr/local/lib/containers/nftables /rootfs/usr/local/etc/containers
+        cp /usr/bin/nft /rootfs/usr/local/lib/containers/nftables/nft
+        install -m 0755 /pkg/nftables-bin /rootfs/usr/local/lib/containers/nftables/nftables
+        cp /pkg/nftables-service.yaml /rootfs/usr/local/etc/containers/nftables.yaml
+    test:
+      - |
+        mkdir -p /extensions-validator-rootfs
+        cp -r /rootfs/ /extensions-validator-rootfs/rootfs
+        cp /pkg/manifest.yaml /extensions-validator-rootfs/manifest.yaml
+        /extensions-validator validate --rootfs=/extensions-validator-rootfs --pkg-name="${PKG_NAME}"
+finalize:
+  - from: /rootfs
+    to: /rootfs
+  - from: /pkg/manifest.yaml
+    to: /
