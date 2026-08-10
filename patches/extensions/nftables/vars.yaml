@@ -1,0 +1,4 @@
+# Passed straight through as --build-arg=VERSION=... (Makefile computes it, see its EXT_VERSION
+# comment for why the field order matters) rather than reassembled here from other build-args -
+# same scheme ../talos-awg-extension's/../talos-router-extension's own vars.yaml use.
+VERSION: "{{ .BUILD_ARG_VERSION }}"

@@ -1,0 +1,17 @@
+version: v1alpha1
+metadata:
+  name: nftables
+  version: "{{ .VERSION }}"
+  author: seacat
+  description: |
+    Oneshot nftables ruleset loader (restart: never - applies once and exits, no ongoing daemon).
+    Reads a raw nftables-syntax ruleset from an ExtensionServiceConfig, substitutes a couple of
+    template placeholders for values only knowable on the running node (which interface carries
+    the default route, per address family), and applies it via a statically-linked `nft`. Identifies
+    its own tables to remove before reapplying by scanning the ruleset itself for `table`
+    declarations - not a hardcoded name, and never `flush ruleset` (other nftables users on the same
+    node are left alone). See talos-extensions/README.md's nftables section for the full config
+    shape and an example ruleset (MSS clamp + NAT of private ranges on egress).
+  compatibility:
+    talos:
+      version: ">= v1.10.0"
