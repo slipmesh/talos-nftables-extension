@@ -96,7 +96,7 @@ make extension                   # nftables-pkg -> agents -> package (this arch)
 make all                            # preflight -> extension
 ```
 
-`make extension` pushes straight to `docker.io/ffaxl/talos` and prints the tag -
+`make extension` pushes straight to `ghcr.io/slipmesh/talos-nftables-extension` and prints the tag -
 `../talos-installer` needs that ref to bundle it into an installer.
 
 ## Verifying a build
