@@ -81,11 +81,18 @@ alongside the vendored `nft` (part of `make extension`).
 ## Cross-architecture
 
 ```sh
-make extension TARGET_ARCH=amd64
-make extension TARGET_ARCH=arm64
+make extension TARGET_ARCH=amd64 RELEASE_TAG=v0.1.0+nftables1.1.1
+make extension TARGET_ARCH=arm64 RELEASE_TAG=v0.1.0+nftables1.1.1
 ```
 
 ## Usage
+
+`extension`/`all` need `TARGET_ARCH=amd64|arm64` and `RELEASE_TAG=<the git tag being
+released>` (no defaults). Like `../bird`, `RELEASE_TAG` *is* the published extension image
+tag (`+` swapped for `-`, since OCI tags can't contain `+`) - see `cliff.toml`'s
+`tag_pattern` for the exact shape (`vX.Y.Z[+nftablesA.B.C]`). The intermediate
+`nftables-pkg` stage keeps its own `versions.env`-derived tag - nothing outside this repo
+ever names it directly.
 
 ```sh
 make print-config      # resolved pins, arch, image names
@@ -120,8 +127,8 @@ shape and an example `ruleset:`.
 ## Bumping
 
 **nftables/libmnl/libnftnl:** set `NFTABLES_VERSION`/`LIBMNL_VERSION`/`LIBNFTNL_VERSION`, run `make
-hashes`, paste the values back, `make extension TARGET_ARCH=<arch>` - re-check the kube-proxy
-compatibility note above before moving `NFTABLES_VERSION` past 1.1.1.
+hashes`, paste the values back, `make extension TARGET_ARCH=<arch> RELEASE_TAG=<new release tag>`.
+Re-check the kube-proxy compatibility note above before moving `NFTABLES_VERSION` past 1.1.1.
 
 **siderolabs/pkgs, siderolabs/extensions:** bump `UPSTREAM_PKGS_REF`/`UPSTREAM_EXTENSIONS_REF`
 freely; they only need to resolve.

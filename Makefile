@@ -30,6 +30,11 @@ ifeq ($(TARGET_ARCH),)
     $(error TARGET_ARCH not set - pass TARGET_ARCH=amd64 or TARGET_ARCH=arm64)
   endif
 endif
+ifeq ($(RELEASE_TAG),)
+  ifneq ($(filter-out distclean help hashes checkout-pkgs checkout-extensions,$(_GOALS)),)
+    $(error RELEASE_TAG not set - pass RELEASE_TAG=v0.1.0+nftables$(NFTABLES_VERSION), the git tag this build is released under)
+  endif
+endif
 
 BUILD_DIR      := build
 PKGS_DIR       := $(BUILD_DIR)/pkgs
@@ -74,6 +79,7 @@ print-config: ## Show the resolved pins, arch and image names.
 	@echo "nftables         : $(NFTABLES_VERSION)"
 	@echo "host arch        : $$(uname -m)"
 	@echo "target arch      : $(TARGET_ARCH)"
+	@echo "release tag      : $(RELEASE_TAG)"
 	@echo "nftables-pkg     : $(NFTABLES_PKG_IMAGE)"
 	@echo "extension image  : $(EXT_IMAGE)"
 
@@ -143,15 +149,16 @@ agents: ## Cross-compile the nftables extension-service daemon (../talos-extensi
 # of those Makefiles for the exact regex and why AGENTS_SHA has to come first.
 EXT_VERSION := $(AGENTS_SHA)-$(TALOS_VERSION)-nft$(NFTABLES_VERSION)
 
-# PKGS_TAG (varies with NFTABLES_VERSION) is folded in here, not just AGENTS_SHA - unlike
-# ../talos-router-extension/../talos-awg-extension, this repo's own pkgs-stage inputs
-# (versions.env's NFTABLES_VERSION et al) can change independently of ../talos-extensions'
-# git commit. Confirmed the hard way: rebuilding after only bumping NFTABLES_VERSION (see
-# that variable's own versions.env comment for why) produced genuinely different image
-# content under what would have been an identical tag with AGENTS_SHA alone - the exact
-# tag-reuse staleness class of bug this whole pipeline has hit before (see
-# ../talos-installer/README.md's BUILD_SLUG for the general form of this fix).
-EXT_IMAGE := $(IMAGE):extension-$(TALOS_VERSION)-nftables-$(PKGS_TAG)-$(AGENTS_SHA)-$(TARGET_ARCH)
+# Registry tag follows ../bird's own convention: the git release tag *is* the image tag
+# (`+` swapped for `-`, since OCI tags can't contain `+`) - RELEASE_TAG is required, not
+# derived from versions.env pins, so a rebuild after bumping NFTABLES_VERSION or
+# ../talos-extensions' commit still needs an explicit new release to publish under (the old
+# PKGS_TAG+AGENTS_SHA-keyed scheme's staleness fix is now just "cut a new release"; see
+# ../talos-installer/README.md's BUILD_SLUG for the general form of the underlying bug).
+# NFTABLES_PKG_IMAGE (the intermediate pkgs-stage image, above) is a purely internal
+# artifact no other repo ever names directly, so it keeps its versions.env-derived tag.
+RELEASE_TAG_SAFE := $(subst +,-,$(RELEASE_TAG))
+EXT_IMAGE := $(IMAGE):$(RELEASE_TAG_SAFE)-$(TARGET_ARCH)
 
 .PHONY: extension
 extension: nftables-pkg agents checkout-extensions ## Package nft + the nftables daemon into a Talos system extension image (bldr).
