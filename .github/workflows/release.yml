@@ -1,7 +1,9 @@
-# Triggered by a `vX.Y.Z` tag. `make agents`/`make extension` need ../talos-extensions checked
-# out as a real sibling directory (Makefile: `test -d $(AGENTS_DIR) || exit 1`), so both repos are
-# checked out side by side under `$GITHUB_WORKSPACE` and every step below runs with
-# `working-directory: talos-nftables-extension` to make that relative path resolve correctly.
+# Triggered by a `vX.Y.Z[+nftablesA.B.C]` tag - like ../bird, the release tag *is* the published
+# image tag (`+` swapped for `-`; see cliff.toml's tag_pattern and the Makefile's
+# RELEASE_TAG_SAFE). `make agents`/`make extension` need ../talos-extensions checked out as a real
+# sibling directory (Makefile: `test -d $(AGENTS_DIR) || exit 1`), so both repos are checked out
+# side by side under `$GITHUB_WORKSPACE` and every step below runs with `working-directory:
+# talos-nftables-extension` to make that relative path resolve correctly.
 #
 # `make extension` chains `nftables-pkg` (pushes the pkgs-stage libmnl/libnftnl/nftables build to
 # PKGS_NS=ghcr.io/slipmesh) as a prerequisite before building/pushing the extension image itself -
@@ -70,4 +72,4 @@ jobs:
 
       - name: Build and push nftables-pkg + extension image
         working-directory: talos-nftables-extension
-        run: make extension TARGET_ARCH=${{ matrix.arch }}
+        run: make extension TARGET_ARCH=${{ matrix.arch }} RELEASE_TAG=${{ github.ref_name }}
