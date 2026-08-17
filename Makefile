@@ -51,7 +51,7 @@ AGENTS_SHA              := $(shell git -C $(AGENTS_DIR) rev-parse --short HEAD 2
 # convention instead) - the two stages predate a shared convention and siderolabs/
 # extensions' own pkg.yaml templates (PKGS_PREFIX + "/nftables-pkg:" + PKGS) expect the
 # namespace shape specifically, not a flat IMAGE:tag.
-PKGS_NS  := docker.io/ffaxl
+PKGS_NS  := ghcr.io/slipmesh
 PKGS_TAG := $(TALOS_VERSION)-nft$(NFTABLES_VERSION)
 
 NFTABLES_PKG_IMAGE := $(PKGS_NS)/nftables-pkg:$(PKGS_TAG)-$(TARGET_ARCH)
