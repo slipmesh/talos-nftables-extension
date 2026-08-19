@@ -54,11 +54,11 @@ actually uses, `nft -f -`, doesn't need it). `--with-json=no` drops the `libjans
 entirely, since nothing here parses or emits JSON. `--with-mini-gmp=yes` avoids an external `libgmp`
 dependency (nftables bundles a minimal GMP implementation for exactly this).
 
-**`NFTABLES_VERSION` is deliberately not the latest release** - see `versions.env`'s own comment:
-nftables >= 1.1.3 changed on-wire "userdata" format for commented sets/maps in a way that segfaults
-kube-proxy 1.36's own (older, bundled) `nft` during a full resync
-(kubernetes/kubernetes#136786, fixed only for Kubernetes 1.37's kube-proxy). Pinned to 1.1.1, the
-newest release confirmed to predate that change.
+**`NFTABLES_VERSION` was held below 1.1.3 for a while** - see `versions.env`'s own comment: nftables
+>= 1.1.3 changed the on-wire "userdata" format for commented sets/maps in a way that segfaulted
+kube-proxy's own (older, bundled) `nft` during a full resync (kubernetes/kubernetes#136786). Fixed
+in kube-proxy as of Kubernetes 1.36.3 (kubernetes/kubernetes#140405) - now pinned to the latest
+stable release again.
 
 ## Layout
 
@@ -81,8 +81,8 @@ alongside the vendored `nft` (part of `make extension`).
 ## Cross-architecture
 
 ```sh
-make extension TARGET_ARCH=amd64 RELEASE_TAG=v0.1.0+nftables1.1.1
-make extension TARGET_ARCH=arm64 RELEASE_TAG=v0.1.0+nftables1.1.1
+make extension TARGET_ARCH=amd64 RELEASE_TAG=v0.1.1+nftables1.1.6
+make extension TARGET_ARCH=arm64 RELEASE_TAG=v0.1.1+nftables1.1.6
 ```
 
 ## Usage
@@ -128,7 +128,9 @@ shape and an example `ruleset:`.
 
 **nftables/libmnl/libnftnl:** set `NFTABLES_VERSION`/`LIBMNL_VERSION`/`LIBNFTNL_VERSION`, run `make
 hashes`, paste the values back, `make extension TARGET_ARCH=<arch> RELEASE_TAG=<new release tag>`.
-Re-check the kube-proxy compatibility note above before moving `NFTABLES_VERSION` past 1.1.1.
+The kube-proxy incompatibility that held `NFTABLES_VERSION` at 1.1.1 (see `versions.env`) is fixed
+as of Kubernetes 1.36.3 - re-check the cluster's actual Kubernetes version is >= 1.36.3 (or >=
+1.37.0) before moving `NFTABLES_VERSION` past 1.1.1 on a cluster still running an older patch.
 
 **siderolabs/pkgs, siderolabs/extensions:** bump `UPSTREAM_PKGS_REF`/`UPSTREAM_EXTENSIONS_REF`
 freely; they only need to resolve.
