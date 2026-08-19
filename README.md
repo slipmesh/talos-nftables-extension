@@ -81,8 +81,8 @@ alongside the vendored `nft` (part of `make extension`).
 ## Cross-architecture
 
 ```sh
-make extension TARGET_ARCH=amd64 RELEASE_TAG=v0.1.1+nftables1.1.6
-make extension TARGET_ARCH=arm64 RELEASE_TAG=v0.1.1+nftables1.1.6
+make extension TARGET_ARCH=amd64 RELEASE_TAG=v0.1.1+nftables1.1.5
+make extension TARGET_ARCH=arm64 RELEASE_TAG=v0.1.1+nftables1.1.5
 ```
 
 ## Usage
