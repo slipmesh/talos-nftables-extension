@@ -22,11 +22,16 @@ Builds with **Docker** (`docker buildx`), on any machine, for any target archite
 
 ## This is one of five repos
 
-- [talos-kernel](https://github.com/slipmesh/talos-kernel) — signed kernel + `amneziawg-pkg`
-- [talos-awg-extension](https://github.com/slipmesh/talos-awg-extension) — amneziawg system extension (pulls `amneziawg-pkg`)
-- [talos-router-extension](https://github.com/slipmesh/talos-router-extension) — router system extension (no kernel dependency)
-- [talos-nftables-extension](https://github.com/slipmesh/talos-nftables-extension) — nftables system extension (no kernel dependency) — **this repo**
-- [talos-installer](https://github.com/slipmesh/talos-installer) — assembles a kernel + N extensions into an installer
+- [talos-kernel](https://github.com/slipmesh/talos-kernel) —
+  signed kernel + `amneziawg-pkg`
+- [talos-awg-extension](https://github.com/slipmesh/talos-awg-extension) —
+  amneziawg system extension (pulls `amneziawg-pkg`)
+- [talos-router-extension](https://github.com/slipmesh/talos-router-extension) —
+  router system extension (no kernel dependency)
+- [talos-nftables-extension](https://github.com/slipmesh/talos-nftables-extension) —
+  nftables system extension (no kernel dependency) — **this repo**
+- [talos-installer](https://github.com/slipmesh/talos-installer) —
+  assembles a kernel + N extensions into an installer
 
 Each repo builds and publishes independently. Like `talos-router-extension`, this repo doesn't need
 `talos-kernel` built first - `preflight` has no dependency-image check.
@@ -74,7 +79,7 @@ stable release again.
 
 ## Layout
 
-```
+```text
 versions.env                      Talos version, pkgs/extensions commits, libmnl/libnftnl/nftables
                                    versions+hashes, image namespace
 patches/pkgs/nftables-pkg/        overlaid onto a siderolabs/pkgs checkout - builds a fully static nft
