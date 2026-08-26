@@ -16,10 +16,9 @@
 # Each arch runs on its own native runner (ubuntu-24.04-arm for arm64, free for public repos)
 # rather than emulating the foreign arch under QEMU on a shared amd64 runner - the bldr/Docker
 # build step genuinely compiles nftables/libmnl/libnftnl from source for that step's platform,
-# and running that under QEMU is real, measurable overhead (confirmed on ../talos-kernel's own
-# arm64 leg, which blew GitHub Actions' 6h job timeout entirely doing this for a full kernel
-# build). No docker/setup-qemu-action needed any more since neither job ever builds a foreign
-# platform.
+# and emulating that costs several times the wall clock. talos-kernel's arm64 leg used to exceed
+# GitHub Actions' 6h job limit this way for a full kernel build. No docker/setup-qemu-action
+# here: neither job ever builds a foreign platform.
 name: Release extension image
 
 on:
