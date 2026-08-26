@@ -65,10 +65,10 @@ steps:
         # flag (tells libtool to forward -static through to the real compiler/linker for its own
         # managed libraries), not a real gcc/ld flag - configure's own "can the C compiler create
         # executables" sanity check invokes gcc directly, not through libtool, and fails outright
-        # if LDFLAGS already contains it (confirmed the hard way). Passed only at `make` time
-        # instead, where every actual link goes through libtool. Plain `-static` was tried first
-        # and silently produced a still-dynamically-linked `nft` (NEEDED libc.so) - libtool
-        # interprets bare `-static` as "prefer static libtool libraries", not "link fully static".
+        # if LDFLAGS already contains it. Passed only at `make` time instead, where every actual
+        # link goes through libtool. Bare `-static` silently produces a still-dynamically-linked
+        # `nft` (NEEDED libc.so): libtool reads it as "prefer static libtool libraries", not
+        # "link fully static".
         make -j $(nproc) LDFLAGS="-all-static"
     install:
       - |

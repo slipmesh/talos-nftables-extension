@@ -62,8 +62,7 @@ dynamically-linked package. `nftables-pkg` here does the same for `nft`: `libmnl
 `nftables`, in that dependency order, all built `--disable-shared --enable-static`, `nft` itself
 linked with libtool's `-all-static` (plain `-static` in `LDFLAGS` is silently swallowed by libtool -
 it means "prefer static libtool libraries" to libtool, not "actually link everything statically";
-`-all-static` is libtool's own spelling for that - confirmed the hard way, see
-`patches/pkgs/nftables-pkg/pkg.yaml`'s own comments for the two failed attempts before this one).
+`-all-static` is libtool's own spelling for that).
 
 `--without-cli` drops `nft`'s own interactive/readline-dependent mode (the same role
 `--disable-client` plays for BIRD in `talos-router-extension` - the batch mode this daemon
