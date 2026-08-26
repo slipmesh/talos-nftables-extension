@@ -52,6 +52,11 @@ steps:
       - |
         cd /src/nftables
         export PKG_CONFIG_PATH=/usr/lib/pkgconfig
+        # nftables >= 1.1.6 generates nftversion.h from an AC_CONFIG_COMMANDS block that
+        # uses a C-style `for ((i = 56; i >= 0; i -= 8))` loop. config.status re-executes
+        # itself under /bin/sh unless told otherwise, and this image's /bin/sh has no such
+        # loop - "bad for loop variable". CONFIG_SHELL is how autoconf is told otherwise.
+        export CONFIG_SHELL=/bin/bash
         ./configure \
           --prefix=/usr \
           --disable-man-doc \
