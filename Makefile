@@ -42,7 +42,7 @@ EXTENSIONS_DIR := $(BUILD_DIR)/extensions
 
 # The `nftables` extension-service daemon lives in a sibling repo, not here - this repo
 # only cross-compiles it and hands the binary to the siderolabs/extensions checkout for
-# packaging. See that repo's README/AGENTS.md for what it does.
+# packaging. See that repo's README for what it does.
 AGENTS_DIR              := ../talos-extensions
 AGENT_RUST_TARGET_amd64 := x86_64-unknown-linux-musl
 AGENT_RUST_TARGET_arm64 := aarch64-unknown-linux-musl
