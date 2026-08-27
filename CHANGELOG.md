@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and follows [Semantic Versioning](https://semver.org/).
 
+## [0.1.3+nftables1.1.6] - 2026-08-27
+
+### Added ✨
+
+- Build nftables 1.1.6, telling autoconf which shell to use
+
+### Miscellaneous 🧹
+
+- Move markdownlint config to the cli2 file
+- Pin the extensions checkout by release tag, not by commit
+- Derive the extensions ref from the Talos version
+
 ## [0.1.2+nftables1.1.5] - 2026-08-26
 
 ### CI/CD ⚙️
