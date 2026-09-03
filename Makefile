@@ -31,7 +31,7 @@ ifeq ($(TARGET_ARCH),)
   endif
 endif
 ifeq ($(RELEASE_TAG),)
-  ifneq ($(filter-out distclean help hashes checkout-pkgs checkout-extensions check-daemons,$(_GOALS)),)
+  ifneq ($(filter-out distclean help hashes checkout-pkgs checkout-extensions check-daemons daemons nftables-pkg,$(_GOALS)),)
     $(error RELEASE_TAG not set - pass RELEASE_TAG=v0.1.0+nftables$(NFTABLES_VERSION), the git tag this build is released under)
   endif
 endif
@@ -144,7 +144,8 @@ checkout-extensions: | $(BUILD_DIR) ## Fetch siderolabs/extensions at the pinned
 
 .PHONY: check-daemons
 check-daemons: ## Assert ../talos-extensions is checked out at DAEMONS_REF.
-	@test -d $(DAEMONS_DIR)/.git || { echo "not a git checkout: $(DAEMONS_DIR)"; exit 1; }
+	@git -C $(DAEMONS_DIR) rev-parse --git-dir >/dev/null 2>&1 \
+	  || { echo "not a git checkout: $(DAEMONS_DIR)"; exit 1; }
 	@want=$$(git -C $(DAEMONS_DIR) rev-parse --verify --quiet 'refs/tags/$(DAEMONS_REF)^{commit}' || true); \
 	if [ -z "$$want" ]; then \
 	  echo "tag $(DAEMONS_REF) not in $(DAEMONS_DIR) - fetch its tags"; \
