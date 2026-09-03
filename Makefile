@@ -40,6 +40,10 @@ BUILD_DIR      := build
 PKGS_DIR       := $(BUILD_DIR)/pkgs
 EXTENSIONS_DIR := $(BUILD_DIR)/extensions
 
+# PKGS is a `git describe` string; `git checkout` needs the object id from its tail.
+# Abbreviated, so it resolves locally but is never fetchable - see checkout-pkgs.
+PKGS_COMMIT := $(lastword $(subst -g, ,$(PKGS)))
+
 # The `nftables` extension-service daemon lives in a sibling repo, not here - this repo
 # only cross-compiles it and hands the binary to the siderolabs/extensions checkout for
 # packaging. See that repo's README for what it does.
@@ -72,7 +76,7 @@ help: ## Show this help.
 .PHONY: print-config
 print-config: ## Show the resolved pins, arch and image names.
 	@echo "talos            : $(TALOS_VERSION)"
-	@echo "pkgs ref         : $(UPSTREAM_PKGS_REF)"
+	@echo "pkgs             : $(PKGS) (commit $(PKGS_COMMIT))"
 	@echo "extensions ref   : $(UPSTREAM_EXTENSIONS_REF)"
 	@echo "daemons ref      : $(DAEMONS_REF) (sibling at $(DAEMONS_SHA))"
 	@echo "libmnl           : $(LIBMNL_VERSION)"
@@ -107,8 +111,9 @@ checkout-pkgs: | $(BUILD_DIR) ## Fetch siderolabs/pkgs at the pinned commit, ove
 	  echo "==> cloning siderolabs/pkgs"; \
 	  git clone --filter=blob:none --quiet https://github.com/siderolabs/pkgs.git $(PKGS_DIR); \
 	fi
-	@git -C $(PKGS_DIR) fetch --quiet --filter=blob:none origin $(UPSTREAM_PKGS_REF) 2>/dev/null || git -C $(PKGS_DIR) fetch --quiet origin
-	@git -C $(PKGS_DIR) checkout --quiet --force --detach $(UPSTREAM_PKGS_REF)
+	@git -C $(PKGS_DIR) fetch --quiet --filter=blob:none --tags origin
+	@full=$$(git -C $(PKGS_DIR) rev-parse --verify '$(PKGS_COMMIT)^{commit}'); \
+	  git -C $(PKGS_DIR) checkout --quiet --force --detach "$$full"
 	@rm -rf $(PKGS_DIR)/nftables-pkg
 	@cp -r patches/pkgs/nftables-pkg $(PKGS_DIR)/nftables-pkg
 

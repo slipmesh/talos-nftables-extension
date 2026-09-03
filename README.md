@@ -148,7 +148,7 @@ The kube-proxy incompatibility that held `NFTABLES_VERSION` at 1.1.1 (see `versi
 as of Kubernetes 1.36.3 - re-check the cluster's actual Kubernetes version is >= 1.36.3 (or >=
 1.37.0) before moving `NFTABLES_VERSION` past 1.1.1 on a cluster still running an older patch.
 
-**siderolabs/pkgs, siderolabs/extensions:** bump `UPSTREAM_PKGS_REF`/`UPSTREAM_EXTENSIONS_REF`
+**siderolabs/pkgs, siderolabs/extensions:** bump `PKGS`/`UPSTREAM_EXTENSIONS_REF`
 freely; they only need to resolve.
 
 **nftables daemon:** any commit in `talos-extensions` - `make extension` always picks up
