@@ -111,7 +111,8 @@ checkout-pkgs: | $(BUILD_DIR) ## Fetch siderolabs/pkgs at the pinned commit, ove
 	  echo "==> cloning siderolabs/pkgs"; \
 	  git clone --filter=blob:none --quiet https://github.com/siderolabs/pkgs.git $(PKGS_DIR); \
 	fi
-	@git -C $(PKGS_DIR) fetch --quiet --filter=blob:none --tags origin
+	@git -C $(PKGS_DIR) rev-parse --verify --quiet '$(PKGS_COMMIT)^{commit}' >/dev/null \
+	  || git -C $(PKGS_DIR) fetch --quiet --filter=blob:none --tags origin
 	@full=$$(git -C $(PKGS_DIR) rev-parse --verify '$(PKGS_COMMIT)^{commit}'); \
 	  git -C $(PKGS_DIR) checkout --quiet --force --detach "$$full"
 	@rm -rf $(PKGS_DIR)/nftables-pkg
