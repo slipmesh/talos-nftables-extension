@@ -1,7 +1,7 @@
 # Overlaid onto a siderolabs/extensions checkout (see Makefile's checkout-extensions target) at
 # nftables/pkg.yaml, alongside nftables-service.yaml (copied from the sibling ../talos-extensions
 # repo's extension-services/nftables.yaml at build time) and nftables-bin (the cross-compiled
-# `nftables` binary, staged in by `make agents` before this runs) - both referenced below as plain
+# `nftables` binary, staged in by `make daemons` before this runs) - both referenced below as plain
 # /pkg/<file> paths, no `sources:` entry needed: bldr already exposes this package's own overlay
 # directory at /pkg/ inside the build (confirmed against ../talos-awg-extension's amneziawg/pkg.yaml,
 # which stages its own cross-compiled binary the identical way).

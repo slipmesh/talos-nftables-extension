@@ -115,7 +115,7 @@ make print-config      # resolved pins, arch, image names
 make preflight          # docker/buildx/git/curl/cargo/cargo-zigbuild present
 make nftables-pkg          # build the static nft binary, push (this arch)
 make daemons                   # cross-compile nftables from ../talos-extensions
-make extension                   # nftables-pkg -> agents -> package (this arch)
+make extension                   # nftables-pkg -> daemons -> package (this arch)
 make all                            # preflight -> extension
 ```
 
