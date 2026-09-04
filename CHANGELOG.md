@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and follows [Semantic Versioning](https://semver.org/).
 
+## [0.1.4+nftables1.1.6] - 2026-09-04
+
+### Added ✨
+
+- Pin talos-extensions by release tag, not branch tip
+- Build the nftables extension against Talos v1.14.0
+
+### CI/CD ⚙️
+
+- Read DAEMONS_REF only when versions.env names it once
+
+### Changed 🔧
+
+- Name the sibling daemons what they call themselves
+- Pin pkgs by the describe string Talos publishes
+
+### Documentation 📚
+
+- Name the renamed daemons target
+- Separate the two pins that are both called PKGS
+
+### Fixed 🐛
+
+- Make the daemons pin fail closed
+- Accept a worktree as the daemons checkout
+- Say why an empty DAEMONS_REF is refused
+- Quote DAEMONS_DIR so a path with spaces resolves
+
+### Performance 🚀
+
+- Fetch pkgs only when the pinned commit is missing
+
 ## [0.1.3+nftables1.1.6] - 2026-08-27
 
 ### Added ✨
