@@ -29,7 +29,7 @@ steps:
         tar -xf nftables.tar.xz --strip-components=1 -C /src/nftables
     # Three libraries, one build step each, in dependency order (libmnl -> libnftnl -> nftables) -
     # siderolabs/pkgs already builds all three (see ../talos-kernel/build/pkgs/{libmnl,libnftnl,
-    # nftables}/pkg.yaml, cloned locally at UPSTREAM_PKGS_REF) but dynamically linked. This repo's
+    # nftables}/pkg.yaml, cloned locally at PKGS) but dynamically linked. This repo's
     # extension is `variant: scratch` with nothing else staged into it - no libmnl.so/libnftnl.so/
     # libc.so alongside `nft` - so `nft` itself has to be the one and only shipped file, fully
     # static, the same reasoning ../talos-router-extension already applied to `bird`

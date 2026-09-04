@@ -38,14 +38,14 @@ Each repo builds and publishes independently. Like `talos-router-extension`, thi
 
 ### One checkout it does need
 
-`make agents` cross-compiles the daemon out of
+`make daemons` cross-compiles the daemon out of
 [talos-extensions](https://github.com/slipmesh/talos-extensions), so that repository has to exist
 on disk - it's the one thing here that isn't consumed as a published image. The default is a
-sibling checkout, `AGENTS_DIR := ../talos-extensions`; clone the two side by side, or point it
+sibling checkout, `DAEMONS_DIR := ../talos-extensions`; clone the two side by side, or point it
 anywhere:
 
 ```sh
-make extension TARGET_ARCH=amd64 RELEASE_TAG=... AGENTS_DIR=/path/to/talos-extensions
+make extension TARGET_ARCH=amd64 RELEASE_TAG=... DAEMONS_DIR=/path/to/talos-extensions
 ```
 
 `preflight` fails loudly if the directory isn't there.
@@ -91,7 +91,7 @@ build/                            (gitignored) both checkouts
 `versions.env` and `patches/` alone.
 
 The `nftables` daemon binary itself lives in the sibling repo `talos-extensions` and is
-cross-compiled by `make agents`, then handed to the `siderolabs/extensions` checkout for packaging
+cross-compiled by `make daemons`, then handed to the `siderolabs/extensions` checkout for packaging
 alongside the vendored `nft` (part of `make extension`).
 
 ## Cross-architecture
@@ -114,8 +114,8 @@ ever names it directly.
 make print-config      # resolved pins, arch, image names
 make preflight          # docker/buildx/git/curl/cargo/cargo-zigbuild present
 make nftables-pkg          # build the static nft binary, push (this arch)
-make agents                   # cross-compile nftables from ../talos-extensions
-make extension                   # nftables-pkg -> agents -> package (this arch)
+make daemons                   # cross-compile nftables from ../talos-extensions
+make extension                   # nftables-pkg -> daemons -> package (this arch)
 make all                            # preflight -> extension
 ```
 
@@ -148,9 +148,10 @@ The kube-proxy incompatibility that held `NFTABLES_VERSION` at 1.1.1 (see `versi
 as of Kubernetes 1.36.3 - re-check the cluster's actual Kubernetes version is >= 1.36.3 (or >=
 1.37.0) before moving `NFTABLES_VERSION` past 1.1.1 on a cluster still running an older patch.
 
-**siderolabs/pkgs, siderolabs/extensions:** bump `UPSTREAM_PKGS_REF`/`UPSTREAM_EXTENSIONS_REF`
+**siderolabs/pkgs, siderolabs/extensions:** bump `PKGS`/`UPSTREAM_EXTENSIONS_REF`
 freely; they only need to resolve.
 
-**nftables daemon:** any commit in `talos-extensions` - `make extension` always picks up
-whatever's currently checked out there and tags accordingly (see `AGENTS_SHA` in the `Makefile`),
-no version bump needed here.
+**nftables daemon:** the `talos-extensions` release tag named by `DAEMONS_REF` -
+`make check-daemons` refuses to build unless the sibling checkout sits at it, and
+`DAEMONS_SHA` records the commit into `EXT_VERSION`. To pick up new daemon work, tag
+`talos-extensions` and bump `DAEMONS_REF`.
