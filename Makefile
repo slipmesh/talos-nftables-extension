@@ -59,7 +59,9 @@ DAEMONS_SHA              := $(shell git -C "$(DAEMONS_DIR)" rev-parse --short HE
 # *extension* image, following ../talos-router-extension's single-IMAGE-many-tag-prefixes
 # convention instead) - the two stages predate a shared convention and siderolabs/
 # extensions' own pkg.yaml templates (PKGS_PREFIX + "/nftables-pkg:" + PKGS) expect the
-# namespace shape specifically, not a flat IMAGE:tag.
+# namespace shape specifically, not a flat IMAGE:tag. The PKGS build-arg those templates
+# read is this stage's own tag, not versions.env's PKGS: one word, two pins - what
+# siderolabs/pkgs is checked out at, and what we publish nftables-pkg under.
 PKGS_NS  := ghcr.io/slipmesh
 PKGS_TAG := $(TALOS_VERSION)-nft$(NFTABLES_VERSION)
 
@@ -178,9 +180,9 @@ EXT_VERSION := $(DAEMONS_SHA)-$(TALOS_VERSION)-nft$(NFTABLES_VERSION)
 # Registry tag follows ../bird's own convention: the git release tag *is* the image tag
 # (`+` swapped for `-`, since OCI tags can't contain `+`) - RELEASE_TAG is required, not
 # derived from versions.env pins, so a rebuild after bumping NFTABLES_VERSION or
-# ../talos-extensions' commit still needs an explicit new release to publish under (the old
-# PKGS_TAG+DAEMONS_SHA-keyed scheme's staleness fix is now just "cut a new release"; see
-# ../talos-installer/README.md's BUILD_SLUG for the general form of the underlying bug).
+# ../talos-extensions' commit still needs an explicit new release to publish under. It was
+# derived once, from PKGS_TAG and the daemon sha; see ../talos-installer/README.md's
+# BUILD_SLUG for the general form of the bug that ended.
 # NFTABLES_PKG_IMAGE (the intermediate pkgs-stage image, above) is a purely internal
 # artifact no other repo ever names directly, so it keeps its versions.env-derived tag.
 RELEASE_TAG_SAFE := $(subst +,-,$(RELEASE_TAG))
