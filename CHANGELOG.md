@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and follows [Semantic Versioning](https://semver.org/).
 
+## [0.1.6+nftables1.1.6] - 2026-10-16
+
+### Added ✨
+
+- Build against Talos v1.14.3
+
+### Build system 🛠️
+
+- Take the daemon release that logs its own name and version
+
 ## [0.1.5+nftables1.1.6] - 2026-09-30
 
 ### Added ✨
