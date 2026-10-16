@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and follows [Semantic Versioning](https://semver.org/).
 
+## [0.1.8+nftables1.1.7] - 2026-10-16
+
+### Added ✨
+
+- Build nftables 1.1.7 and libnftnl 1.3.2
+
 ## [0.1.7+nftables1.1.6] - 2026-10-16
 
 ### Added ✨
