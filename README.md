@@ -1,10 +1,11 @@
 # talos-nftables-extension
 
 Packages the **nftables** Talos system extension - a daemon (`talos-extensions/nftables`) that
-applies a raw nftables ruleset from an `ExtensionServiceConfig`, with `{{ placeholder }}`
-substitution for values only knowable on the running node (currently: which interface carries the
-default route, per address family), then stays resident watching (via `nft monitor`) for something
-else on the node wiping its tables - confirmed real on a real node (something's first
+applies an nftables ruleset from an `ExtensionServiceConfig`, given as a template
+(`/etc/talos-extensions/nftables.conf.j2`) of values only knowable on the running node
+(currently: which interface carries the default route, per address family), then stays resident
+watching (via `nft monitor`) for something else on the node wiping its tables - confirmed real
+on a real node (something's first
 iptables-nft-mode bootstrap around kubelet/kube-proxy startup can catch unrelated tables in a
 one-time boot race), not a hypothetical. No kernel module involved - pure userspace, fully
 independent of `talos-kernel`.
@@ -138,7 +139,7 @@ Full node-level verification (the daemon actually applying rules, MSS clamp/NAT 
 surviving the boot-time race with kube-proxy's own bootstrap) happens
 after `talos-installer` bundles this extension and a node runs `talosctl upgrade` - see that
 repo's README, and `talos-extensions/README.md`'s `nftables` section for the daemon's own config
-shape and an example `ruleset:`.
+shape and the reference ruleset template.
 
 ## Bumping
 
