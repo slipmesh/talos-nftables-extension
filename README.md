@@ -2,8 +2,9 @@
 
 Packages the **nftables** Talos system extension - a daemon (`talos-extensions/nftables`) that
 applies an nftables ruleset from an `ExtensionServiceConfig`, given as a template
-(`/etc/talos-extensions/nftables.conf.j2`) of values only knowable on the running node
-(currently: which interface carries the default route, per address family), then stays resident
+(`/etc/talos-extensions/nftables.conf.j2`) with placeholders for values only knowable on the
+running node (currently: which interface carries the default route, per address family), then
+stays resident
 watching (via `nft monitor`) for something else on the node wiping its tables - confirmed real
 on a real node (something's first
 iptables-nft-mode bootstrap around kubelet/kube-proxy startup can catch unrelated tables in a
