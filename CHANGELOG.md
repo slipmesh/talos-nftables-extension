@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 This project adheres to [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
 and follows [Semantic Versioning](https://semver.org/).
 
+## [0.2.0+nftables1.1.7] - 2026-10-19
+
+### Build system 🛠️
+
+- Take the daemon release that reads its config as a template
+
+### Documentation 📚
+
+- Describe the ruleset as a template file
+- Say the ruleset template has placeholders for node values
+- Reflow the opening paragraph
+
 ## [0.1.8+nftables1.1.7] - 2026-10-16
 
 ### Added ✨
