@@ -123,7 +123,8 @@ checkout-pkgs: | $(BUILD_DIR) ## Fetch siderolabs/pkgs at the pinned commit, ove
 NFTABLES_PKG_ARGS := \
   --build-arg=LIBMNL_VERSION=$(LIBMNL_VERSION) --build-arg=LIBMNL_SHA256=$(LIBMNL_SHA256) --build-arg=LIBMNL_SHA512=$(LIBMNL_SHA512) \
   --build-arg=LIBNFTNL_VERSION=$(LIBNFTNL_VERSION) --build-arg=LIBNFTNL_SHA256=$(LIBNFTNL_SHA256) --build-arg=LIBNFTNL_SHA512=$(LIBNFTNL_SHA512) \
-  --build-arg=NFTABLES_VERSION=$(NFTABLES_VERSION) --build-arg=NFTABLES_SHA256=$(NFTABLES_SHA256) --build-arg=NFTABLES_SHA512=$(NFTABLES_SHA512)
+  --build-arg=NFTABLES_VERSION=$(NFTABLES_VERSION) --build-arg=NFTABLES_SHA256=$(NFTABLES_SHA256) --build-arg=NFTABLES_SHA512=$(NFTABLES_SHA512) \
+  --build-arg=MUSL_VERSION=$(MUSL_VERSION) --build-arg=MUSL_SHA256=$(MUSL_SHA256) --build-arg=MUSL_SHA512=$(MUSL_SHA512)
 
 .PHONY: nftables-pkg
 nftables-pkg: checkout-pkgs ## Build our own statically-linked nft (libmnl -> libnftnl -> nftables), push.
@@ -206,10 +207,11 @@ all: preflight extension ## Everything: nft pkg -> daemons -> extension image.
 ##@ Maintenance
 
 .PHONY: hashes
-hashes: ## Recompute LIBMNL_/LIBNFTNL_/NFTABLES_ SHA256/SHA512 for the current *_VERSION values.
+hashes: ## Recompute LIBMNL_/LIBNFTNL_/NFTABLES_/MUSL_ SHA256/SHA512 for the current *_VERSION values.
 	@for spec in "libmnl:https://www.netfilter.org/projects/libmnl/files/libmnl-$(LIBMNL_VERSION).tar.bz2:LIBMNL" \
 	             "libnftnl:https://netfilter.org/projects/libnftnl/files/libnftnl-$(LIBNFTNL_VERSION).tar.xz:LIBNFTNL" \
-	             "nftables:https://netfilter.org/projects/nftables/files/nftables-$(NFTABLES_VERSION).tar.xz:NFTABLES"; do \
+	             "nftables:https://netfilter.org/projects/nftables/files/nftables-$(NFTABLES_VERSION).tar.xz:NFTABLES" \
+	             "musl:https://www.musl-libc.org/releases/musl-$(MUSL_VERSION).tar.gz:MUSL"; do \
 	  name=$${spec%%:*}; rest=$${spec#*:}; url=$${rest%:*}; var=$${rest##*:}; \
 	  tmp=$$(mktemp); \
 	  curl -sSL --fail "$$url" -o "$$tmp"; \

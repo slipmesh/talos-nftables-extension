@@ -17,6 +17,10 @@ steps:
         destination: nftables.tar.xz
         sha256: "{{ .BUILD_ARG_NFTABLES_SHA256 }}"
         sha512: "{{ .BUILD_ARG_NFTABLES_SHA512 }}"
+      - url: https://www.musl-libc.org/releases/musl-{{ .BUILD_ARG_MUSL_VERSION }}.tar.gz
+        destination: musl.tar.gz
+        sha256: "{{ .BUILD_ARG_MUSL_SHA256 }}"
+        sha512: "{{ .BUILD_ARG_MUSL_SHA512 }}"
     prepare:
       - |
         mkdir -p /src/libmnl
@@ -27,6 +31,9 @@ steps:
       - |
         mkdir -p /src/nftables
         tar -xf nftables.tar.xz --strip-components=1 -C /src/nftables
+      - |
+        mkdir -p /src/musl
+        tar -xzf musl.tar.gz --strip-components=1 -C /src/musl musl-{{ .BUILD_ARG_MUSL_VERSION }}/COPYRIGHT
     # Three libraries, one build step each, in dependency order (libmnl -> libnftnl -> nftables) -
     # siderolabs/pkgs already builds all three (see ../talos-kernel/build/pkgs/{libmnl,libnftnl,
     # nftables}/pkg.yaml, cloned locally at PKGS) but dynamically linked. This repo's
@@ -75,11 +82,45 @@ steps:
         cd /src/nftables
         make install DESTDIR=/rootfs
         rm -rf /rootfs/usr/share/
+      - |
+        # nft is a static binary: every library linked into it travels with its license text.
+        licenses=/rootfs/usr/local/share/licenses/nftables
+        mkdir -p "$licenses"
+        cp /src/nftables/COPYING "$licenses/nftables.LICENSE"
+        cp /src/libnftnl/COPYING "$licenses/libnftnl.LICENSE"
+        cp /src/libmnl/COPYING "$licenses/libmnl.LICENSE"
+        cp /src/musl/COPYRIGHT "$licenses/musl.LICENSE"
+        printf 'nftables %s, built without modification from https://netfilter.org/projects/nftables/files/nftables-%s.tar.xz\n' \
+          "{{ .BUILD_ARG_NFTABLES_VERSION }}" "{{ .BUILD_ARG_NFTABLES_VERSION }}" > "$licenses/nftables.SOURCE"
+        printf 'libnftnl %s, statically linked into nft, built without modification from https://netfilter.org/projects/libnftnl/files/libnftnl-%s.tar.xz\n' \
+          "{{ .BUILD_ARG_LIBNFTNL_VERSION }}" "{{ .BUILD_ARG_LIBNFTNL_VERSION }}" > "$licenses/libnftnl.SOURCE"
+        printf 'libmnl %s, statically linked into nft, built without modification from https://www.netfilter.org/projects/libmnl/files/libmnl-%s.tar.bz2\n' \
+          "{{ .BUILD_ARG_LIBMNL_VERSION }}" "{{ .BUILD_ARG_LIBMNL_VERSION }}" > "$licenses/libmnl.SOURCE"
+        printf 'musl %s, statically linked into nft from the siderolabs toolchain, source https://www.musl-libc.org/releases/musl-%s.tar.gz\n' \
+          "{{ .BUILD_ARG_MUSL_VERSION }}" "{{ .BUILD_ARG_MUSL_VERSION }}" > "$licenses/musl.SOURCE"
     test:
       - |
         # A truly static ELF has no PT_INTERP program header (no dynamic linker to invoke) - more
         # portable across build-image toolchains than parsing `file`'s freeform text output.
         ! readelf -l /rootfs/usr/bin/nft | grep -q INTERP
+      - |
+        licenses=/rootfs/usr/local/share/licenses/nftables
+        expect() {
+          grep -q "$2" "$licenses/$1" || { echo "$licenses/$1 lacks '$2'"; exit 1; }
+        }
+        expect nftables.LICENSE 'Version 2, June 1991'
+        expect libnftnl.LICENSE 'Version 2, June 1991'
+        expect libmnl.LICENSE 'Version 2.1, February 1999'
+        expect musl.LICENSE 'Permission is hereby granted'
+        for component in nftables libnftnl libmnl musl; do
+          expect "$component.SOURCE" "^$component "
+        done
+        # musl's text comes from a tarball pinned in versions.env, while the libc.a that nft
+        # links comes from the tools image PKGS selects; a PKGS bump must not ship a stale text.
+        # The loader exits non-zero when run bare, so its banner is captured before matching.
+        loader=$(/lib/ld-musl-*.so.1 2>&1 || true)
+        grep -qx 'Version {{ .BUILD_ARG_MUSL_VERSION }}' <<<"$loader" \
+          || { echo "tools image musl is not {{ .BUILD_ARG_MUSL_VERSION }}: $loader"; exit 1; }
     sbom:
       outputPath: /rootfs/usr/share/spdx/nftables-pkg.spdx.json
       version: {{ .BUILD_ARG_NFTABLES_VERSION }}

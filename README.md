@@ -141,6 +141,20 @@ after `talos-installer` bundles this extension and a node runs `talosctl upgrade
 repo's README, and `talos-extensions/README.md`'s `nftables` section for the daemon's own config
 shape and the reference ruleset template.
 
+## Licenses
+
+`nft` is a static binary, so the extension distributes nftables and libnftnl (GPL-2.0-or-later),
+libmnl (LGPL-2.1-or-later) and musl (MIT) inside it, and their license texts ship with it under
+`/usr/local/share/licenses/nftables/`. Each text comes from its own source tree: `COPYING` from the
+three netfilter.org tarballs, `COPYRIGHT` from the musl release tarball pinned as `MUSL_VERSION`.
+musl itself is linked from the siderolabs tools image `PKGS` selects, so `nftables-pkg`'s test
+fails when that image's musl is not `MUSL_VERSION`.
+
+All four are used without modification, so there are no changed files to mark. A `*.SOURCE` file
+beside each license text names the release and the URL its source comes from. This repository's
+own code is MIT or Apache-2.0; the `nftables` daemon runs `nft` as a separate process, so it is
+not linked with it.
+
 ## Bumping
 
 **nftables/libmnl/libnftnl:** set `NFTABLES_VERSION`/`LIBMNL_VERSION`/`LIBNFTNL_VERSION`, run `make
@@ -150,7 +164,9 @@ as of Kubernetes 1.36.3 - re-check the cluster's actual Kubernetes version is >=
 1.37.0) before moving `NFTABLES_VERSION` past 1.1.1 on a cluster still running an older patch.
 
 **siderolabs/pkgs, siderolabs/extensions:** bump `PKGS`/`UPSTREAM_EXTENSIONS_REF`
-freely; they only need to resolve.
+freely; they only need to resolve. A `PKGS` that moves to a tools image with another musl fails
+`nftables-pkg`'s test until `MUSL_VERSION` names that musl again: set it, run `make hashes`, paste
+the values back.
 
 **nftables daemon:** the `talos-extensions` release tag named by `DAEMONS_REF` -
 `make check-daemons` refuses to build unless the sibling checkout sits at it, and

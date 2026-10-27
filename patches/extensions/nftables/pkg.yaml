@@ -26,9 +26,18 @@ steps:
       - |
         mkdir -p /rootfs/usr/local/lib/containers/nftables /rootfs/usr/local/etc/containers
         cp /usr/bin/nft /rootfs/usr/local/lib/containers/nftables/nft
+        mkdir -p /rootfs/usr/local/share/licenses
+        cp -r /usr/local/share/licenses/nftables /rootfs/usr/local/share/licenses/
         install -m 0755 /pkg/nftables-bin /rootfs/usr/local/lib/containers/nftables/nftables
         cp /pkg/nftables-service.yaml /rootfs/usr/local/etc/containers/nftables.yaml
     test:
+      - |
+        for component in nftables libnftnl libmnl musl; do
+          for kind in LICENSE SOURCE; do
+            file=/rootfs/usr/local/share/licenses/nftables/$component.$kind
+            test -s "$file" || { echo "missing $file"; exit 1; }
+          done
+        done
       - |
         mkdir -p /extensions-validator-rootfs
         cp -r /rootfs/ /extensions-validator-rootfs/rootfs
