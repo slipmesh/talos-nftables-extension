@@ -178,7 +178,7 @@ daemons: check-daemons ## Cross-compile the nftables extension-service daemon (.
 # of those Makefiles for the exact regex and why DAEMONS_SHA has to come first.
 EXT_VERSION := $(DAEMONS_SHA)-$(TALOS_VERSION)-nft$(NFTABLES_VERSION)
 
-# Registry tag follows ../bird's own convention: the git release tag *is* the image tag
+# The git release tag *is* the image tag
 # (`+` swapped for `-`, since OCI tags can't contain `+`) - RELEASE_TAG is required, not
 # derived from versions.env pins, so a rebuild after bumping NFTABLES_VERSION or
 # ../talos-extensions' commit still needs an explicit new release to publish under. It was
