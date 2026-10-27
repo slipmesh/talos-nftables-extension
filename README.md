@@ -105,7 +105,7 @@ make extension TARGET_ARCH=arm64 RELEASE_TAG=v0.1.1+nftables1.1.5
 ## Usage
 
 `extension`/`all` need `TARGET_ARCH=amd64|arm64` and `RELEASE_TAG=<the git tag being
-released>` (no defaults). Like `bird`, `RELEASE_TAG` *is* the published extension image
+released>` (no defaults). `RELEASE_TAG` *is* the published extension image
 tag (`+` swapped for `-`, since OCI tags can't contain `+`) - see `cliff.toml`'s
 `tag_pattern` for the exact shape (`vX.Y.Z[+nftablesA.B.C]`). The intermediate
 `nftables-pkg` stage keeps its own `versions.env`-derived tag - nothing outside this repo
